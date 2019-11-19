@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Mx Infornet SG Coach</string>
+
+    <string name="restablecerpass">Restablecer contraseña</string>
+    <string name="login_title">Iniciar sesión</string>
+    <string name="login_btn">Entrar</string>
+    <string name="loading_login">Iniciando sesión ...</string>
+    <string name="correo">Correo</string>
+    <string name="msgForget">He olvidado mi contraseña</string>
+    <string name="password">Contraseña</string>
+    <string name="enviar">Enviar</string>
+
+    <string name="mensajeRestablecer">Ingresa tu email</string>
+    <string name="nuevacontra">Nueva contraseña</string>
+    <string name="confpassword">Confirmar contraseña</string>
+    <string name="ingresarpass">Registrar constraseña</string>
+
+</resources>
