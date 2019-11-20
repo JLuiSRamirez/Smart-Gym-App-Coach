@@ -51,7 +51,6 @@ public class ForgetPasswordActivity extends AppCompatActivity {
 
         btn_forget = findViewById(R.id.btn_forget_pass);
 
-
         queue = Volley.newRequestQueue(this);
 
         btn_forget.setOnClickListener(new View.OnClickListener() {

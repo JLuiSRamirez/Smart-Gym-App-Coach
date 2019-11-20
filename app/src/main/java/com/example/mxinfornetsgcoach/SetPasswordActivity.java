@@ -58,9 +58,6 @@ public class SetPasswordActivity extends AppCompatActivity {
         final String email = uri.getQueryParameter("email");
         final String gimnasio = uri.getQueryParameter("gimnasio");
 
-        //Log.d("email", email);
-        //Log.d("gym", gimnasio);
-
         queue = Volley.newRequestQueue(this);
 
 
@@ -102,25 +99,50 @@ public class SetPasswordActivity extends AppCompatActivity {
                                     String status = jsonObject.getString("status");
                                     String postToken = jsonObject.getString("access_token");
                                     JSONObject usuario = jsonObject.getJSONObject("usuario");
+                                    String error = jsonObject.getString("error");
 
                                     if (status.equals("200")) {
                                         //Log.d("JSONUSUARIO", usuario.toString());
                                         String mensaje = jsonObject.getString("message");
 
+                                        String postId = usuario.getString("id");
+                                        String postNombre = usuario.getString("nombre");
+                                        String postBiografia = usuario.getString("biografia");
+                                        String postEmail = usuario.getString("email");
+                                        String postHorarios = usuario.getString("horarios");
+                                        String postGimnasio = usuario.getString("id_gimnasio");
+
+                                        ConexionSQLiteHelper con = new ConexionSQLiteHelper(getApplicationContext(), "coaches", null, 2);
+                                        SQLiteDatabase db = con.getWritableDatabase();
+                                        ContentValues values = new ContentValues();
+
+                                        values.put("idCoach", postId);
+                                        values.put("nombre", postNombre);
+                                        values.put("biografia", postBiografia);
+                                        values.put("email", postEmail);
+                                        values.put("horarios", postHorarios);
+                                        values.put("gimnasio", postGimnasio);
+                                        values.put("token", postToken);
+
+                                        db.insert("coaches", null, values);
+                                        db.close();
 
                                         Toast.makeText(getApplicationContext(), mensaje, Toast.LENGTH_LONG).show();
 
-                                        Intent i = new Intent(SetPasswordActivity.this, MainActivity.class);
+                                        Intent i = new Intent(SetPasswordActivity.this, LoginActivity.class);
                                         startActivity(i);
                                         SetPasswordActivity.this.finish();
 
-                                        //email.setText("");
-                                        //password.setText("");
-                                        //password_confirm.setText("");
-
+                                    }else if (status.equals("404")) {
+                                        String msg = jsonObject.getString("message");
+                                        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
                                     } else if (status.equals("401")) {
-                                        String error = jsonObject.getString("message");
-                                        Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
+                                        String msg = jsonObject.getString("message");
+                                        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+                                    }else if ( status.equals("500")) {
+                                        String msg = jsonObject.getString("message");
+                                        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getApplicationContext(), "Tostada de response", Toast.LENGTH_LONG).show();
                                     }
                                 }
 
@@ -147,12 +169,15 @@ public class SetPasswordActivity extends AppCompatActivity {
                                 try {
                                     JSONObject jsonObjectError = new JSONObject(jsonError);
                                     String status = jsonObjectError.getString("status");
-
-                                    if(status.equals("500")){
+                                    if( status.equals("500")){
+                                        String err = jsonObjectError.getString("message");
+                                        Toast.makeText(getApplicationContext(), err, Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getApplicationContext(), "Tostada de errorresponse", Toast.LENGTH_LONG).show();
+                                    }else if(status.equals("404")) {
                                         String err = jsonObjectError.getString("message");
                                         Toast.makeText(getApplicationContext(), err, Toast.LENGTH_LONG).show();
                                     }else {
-                                        Toast.makeText(getApplicationContext(), "No se puedo conectar con el servidor. Compruba que tienes acceso a la red.", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getApplicationContext(), "No se puedo conectar con el servidor. Compreuba que tienes acceso a la red.", Toast.LENGTH_LONG).show();
                                     }
 
                                 }catch (JSONException e){

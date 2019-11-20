@@ -2,7 +2,10 @@ package com.example.mxinfornetsgcoach;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
@@ -57,6 +60,26 @@ public class LoginActivity extends AppCompatActivity {
 
         queue = Volley.newRequestQueue(getApplicationContext());
 
+        ConexionSQLiteHelper conexion = new ConexionSQLiteHelper(getApplicationContext(), "usuarios", null, 2);
+        SQLiteDatabase db = conexion.getWritableDatabase();
+
+        //Busca si existe algun usuario
+        try {
+            String query = "SELECT * FROM coaches";
+            Cursor cursor = db.rawQuery(query, null);
+
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()){
+                res = cursor.getCount();
+            }
+
+            if(res > 0){
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+            }
+
+        }catch (Exception e){
+            e.getStackTrace();
+        }
+
         forget_pass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,12 +99,14 @@ public class LoginActivity extends AppCompatActivity {
                 final String correo = te_correo.getText().toString();
                 final String password = te_password.getText().toString();
 
-
                 //se validan los campos
-                if(TextUtils.isEmpty(correo) || !correo.matches(emailPattern)){
-                    te_correo.setError("Ingresa un correo valido. Ej. example@mail.com");
+                if(TextUtils.isEmpty(correo)){
+                    te_correo.setError("Ingresa una direccion de correo electronico");
                     te_correo.requestFocus();
                     return;
+                }else if ( !correo.matches(emailPattern)) {
+                    te_correo.setError("Ingresa un correo valido. Ej. example@mail.com");
+                    te_correo.requestFocus();
                 }else if(TextUtils.isEmpty(password)){
                     te_password.setError("Por favor introduzca una contraseña válida");
                     te_password.requestFocus();
@@ -111,6 +136,28 @@ public class LoginActivity extends AppCompatActivity {
                                     //Log.d("JSONUSUARIO", usuario.toString());
 
                                     String mensaje = jsonObject.getString("message");
+
+                                    String postId = usuario.getString("id");
+                                    String postNombre = usuario.getString("nombre");
+                                    String postBiografia = usuario.getString("biografia");
+                                    String postEmail = usuario.getString("email");
+                                    String postHorarios = usuario.getString("horarios");
+                                    String postGimnasio = usuario.getString("id_gimnasio");
+
+                                    ConexionSQLiteHelper con = new ConexionSQLiteHelper(getApplicationContext(), "coaches", null, 2);
+                                    SQLiteDatabase db = con.getWritableDatabase();
+                                    ContentValues values = new ContentValues();
+
+                                    values.put("idCoach", postId);
+                                    values.put("nombre", postNombre);
+                                    values.put("biografia", postBiografia);
+                                    values.put("email", postEmail);
+                                    values.put("horarios", postHorarios);
+                                    values.put("gimnasio", postGimnasio);
+                                    values.put("token", postToken);
+
+                                    db.insert("coaches", null, values);
+                                    db.close();
 
                                     Toast.makeText(getApplicationContext(), mensaje, Toast.LENGTH_LONG).show();
 

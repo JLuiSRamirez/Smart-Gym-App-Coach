@@ -100,9 +100,6 @@ public class ResetPasswordActivity extends AppCompatActivity {
                             try {
                                 JSONObject jsonObject = new JSONObject(response);
 
-                                //Log.d("TIENE_ERROR", String.valueOf(jsonObject.has("error")));
-                                //Log.d("TIENE_STAUS", String.valueOf(jsonObject.has("status")));
-
                                 if(jsonObject.has("error")){
                                     String error = jsonObject.getString("error");
                                     Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
@@ -115,6 +112,27 @@ public class ResetPasswordActivity extends AppCompatActivity {
                                         //Log.d("JSONUSUARIO", usuario.toString());
                                         String mensaje = jsonObject.getString("message");
 
+                                        String postId = usuario.getString("id");
+                                        String postNombre = usuario.getString("nombre");
+                                        String postBiografia = usuario.getString("biografia");
+                                        String postEmail = usuario.getString("email");
+                                        String postHorarios = usuario.getString("horarios");
+                                        String postGimnasio = usuario.getString("id_gimnasio");
+
+                                        ConexionSQLiteHelper con = new ConexionSQLiteHelper(getApplicationContext(), "coaches", null, 2);
+                                        SQLiteDatabase db = con.getWritableDatabase();
+                                        ContentValues values = new ContentValues();
+
+                                        values.put("idCoach", postId);
+                                        values.put("nombre", postNombre);
+                                        values.put("biografia", postBiografia);
+                                        values.put("email", postEmail);
+                                        values.put("horarios", postHorarios);
+                                        values.put("gimnasio", postGimnasio);
+                                        values.put("token", postToken);
+
+                                        db.insert("coaches", null, values);
+                                        db.close();
 
                                         Toast.makeText(getApplicationContext(), mensaje, Toast.LENGTH_LONG).show();
 
@@ -122,9 +140,6 @@ public class ResetPasswordActivity extends AppCompatActivity {
                                         startActivity(i);
                                         ResetPasswordActivity.this.finish();
 
-                                        //email.setText("");
-                                        //password.setText("");
-                                        //password_confirm.setText("");
 
                                     } else if (status.equals("401")) {
                                         String error = jsonObject.getString("message");
