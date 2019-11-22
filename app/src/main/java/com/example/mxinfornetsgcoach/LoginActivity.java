@@ -60,14 +60,13 @@ public class LoginActivity extends AppCompatActivity {
 
         queue = Volley.newRequestQueue(getApplicationContext());
 
-        ConexionSQLiteHelper conexion = new ConexionSQLiteHelper(getApplicationContext(), "usuarios", null, 2);
+        ConexionSQLiteHelper conexion = new ConexionSQLiteHelper(getApplicationContext(), "coaches", null, 2);
         SQLiteDatabase db = conexion.getWritableDatabase();
 
-        //Busca si existe algun usuario
+        //Busca el registro de un usuario si ya ha iniciado sesion
         try {
             String query = "SELECT * FROM coaches";
             Cursor cursor = db.rawQuery(query, null);
-
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()){
                 res = cursor.getCount();
             }
@@ -208,7 +207,7 @@ public class LoginActivity extends AppCompatActivity {
                                         }
 
                                     }catch (JSONException e){
-
+                                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                                     }
                                 }
                             }
